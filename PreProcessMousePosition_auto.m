@@ -81,6 +81,27 @@ Ypix = pos_data.data(:,7);
 time = pos_data.data(:,4);
 end
 
+%WM Edit: Check for correct Cineplex sampling rate. 
+dt = [0.03; round(diff(time),2)]; 
+bad = dt~=0.03; 
+if any(bad)
+    im = regionprops(bad,'Area','PixelIdxList'); 
+    
+    for i=1:length(im)
+        s = im(i).PixelIdxList(1); 
+        e = im(i).PixelIdxList(end); 
+        
+        tInsert = [time(s):1/aviSR:time(e)]'; 
+        l = length(tInsert); 
+        XpixInsert = Xpix(s-1)*ones(l,1); 
+        YpixInsert = Ypix(s-1)*ones(l,1);
+        
+        time = [time(1:s); tInsert; time(e:end)];
+        Xpix = [Xpix(1:s); XpixInsert; Xpix(e:end)];
+        Ypix = [Ypix(1:s); YpixInsert; Ypix(e:end)];
+    end
+end
+
 xAVI = Xpix*.6246;
 yAVI = Ypix*.6246;
 
@@ -180,6 +201,7 @@ while (strcmp(MorePoints,'y')) || strcmp(MorePoints,'m') || isempty(MorePoints)
 %         linkaxes([hx0 hy0],'x');
 %     end
   if auto_thresh_flag == 0 || isempty(epoch_start)
+      figure(555);
       MorePoints = input('Is there a flaw that needs to be corrected?  [y/n/manual correct (m)] -->','s');
   else
       MorePoints = 'y'; pause(1)
@@ -278,10 +300,10 @@ while (strcmp(MorePoints,'y')) || strcmp(MorePoints,'m') || isempty(MorePoints)
         %Subtract current frame from reference, then flip and smooth. Next,
         %run regionprops. 
         d = imgaussfilt(flipud(rgb2gray(v0-v)),10); 
-        stats = regionprops(d>20 & maze,'area','solidity','centroid','eccentricity','majoraxislength','minoraxislength');        
+        stats = regionprops(d>18 & maze,'area','centroid','majoraxislength','minoraxislength');        
         
         %Find the blob that corresponds to the mouse. 
-        MouseBlob = find(   [stats.Area] > 300 & ...
+        MouseBlob = find(   [stats.Area] > 200 & ...
                             [stats.MajorAxisLength] > 10 & ...
                             [stats.MinorAxisLength] > 10);
         if length(MouseBlob)==1     
@@ -538,10 +560,11 @@ end
 Xpix_filt = NP_QuickFilt(Xpix,0.0000001,1,PosSR);
 Ypix_filt = NP_QuickFilt(Ypix,0.0000001,1,PosSR);
 
-if size(pos_data,2) == 5
-    motion = pos_data(:,5);
-end
+% if size(pos_data,2) == 5
+%     motion = pos_data(:,5);
+% end
 
+AVIobjTime = zeros(1,length(time)); 
 for i = 1:length(time)
     AVIobjTime(i) = i/aviSR;
 end
