@@ -311,8 +311,8 @@ while (strcmp(MorePoints,'y')) || strcmp(MorePoints,'m') || isempty(MorePoints)
             ym = stats(MouseBlob).Centroid(2);
         elseif length(MouseBlob)>1
             %Get mouse position on the previous frame. 
-            previousX = xAVI(framesToCorrect(i)-1);
-            previousY = yAVI(framesToCorrect(i)-1); 
+            previousX = xAVI(sFrame+i*2-1);
+            previousY = yAVI(sFrame+i*2-1); 
             
             %Possible mouse blobs. 
             putativeMouse = [stats(MouseBlob).Centroid];
@@ -374,7 +374,8 @@ while (strcmp(MorePoints,'y')) || strcmp(MorePoints,'m') || isempty(MorePoints)
         plot(time(ind_red),vel(ind_red),'ro');
         hold off
     end
-    hold off;axis tight;xlabel('time (sec)');ylabel('velocity (units/sec)');
+    hold off;axis tight;xlabel('time (sec)');ylabel('velocity (units/sec)'); 
+    set(gca,'xtick',[]); 
     xlim_use = get(gca,'XLim'); hv = gca;
     
     % plot updated x and y values
