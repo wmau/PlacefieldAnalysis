@@ -140,11 +140,11 @@ if exist('Pos_temp.mat','file') || exist('Pos.mat','file')
         MoMtime
     else
         MouseOnMazeFrame = input('on what frame number does Mr. Mouse arrive on the maze??? --->');
-        MoMtime = MouseOnMazeFrame*1/aviSR+time(1)
+        MoMtime = MouseOnMazeFrame/aviSR+time(1)
     end
 else
     MouseOnMazeFrame = input('on what frame number does Mr. Mouse arrive on the maze??? --->');
-    MoMtime = MouseOnMazeFrame*1/aviSR+time(1)
+    MoMtime = MouseOnMazeFrame/aviSR+time(1)
 end
 close(h1); % Close Video Player
 
