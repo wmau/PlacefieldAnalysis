@@ -31,10 +31,10 @@ plexTime = (0:length(x)-1)/SR+start_time;
 pStart = findclosest(MoMtime,plexTime);
 x = x(pStart:end);
 y = y(pStart:end);
-time_interp = time_interp(pStart:end); 
+time_interp = time_interp(pStart:end);          %time_interp starts when mouse is on maze. 
 
 if exist('AVItime_interp','var')
-    aviFrame = AVItime_interp(pStart:end);
+    aviFrame = AVItime_interp(pStart:end);      %aviFrame starts from beginning of AVI. 
 else
     aviFrame = 1:size(FT,2);
     disp('aviFrame not found in Pos.mat.  Faking for now')

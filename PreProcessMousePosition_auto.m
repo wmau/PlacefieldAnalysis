@@ -84,21 +84,28 @@ end
 %WM Edit: Check for correct Cineplex sampling rate. 
 dt = [0.03; round(diff(time),2)]; 
 bad = dt~=0.03; 
+cum_l = 0;
 if any(bad)
+    disp('Dropped frames detected! Correcting as best I can...'); 
     im = regionprops(bad,'Area','PixelIdxList'); 
     
     for i=1:length(im)
-        s = im(i).PixelIdxList(1); 
-        e = im(i).PixelIdxList(end); 
+        if im(i).Area > 1
+            s = im(i).PixelIdxList(1)+cum_l;
+            e = im(i).PixelIdxList(end)+cum_l;
+
+            tInsert = [(time(s)+1/aviSR):(1/aviSR):(time(e)-1/aviSR)]';
+            l = length(tInsert);  
+            cum_l = cum_l + l;
+            XpixInsert = Xpix(s-1)*ones(l,1); 
+            YpixInsert = Ypix(s-1)*ones(l,1);
+
+            time = [time(1:s); tInsert; time(e:end)];
+            Xpix = [Xpix(1:s); XpixInsert; Xpix(e:end)];
+            Ypix = [Ypix(1:s); YpixInsert; Ypix(e:end)];
+        end
         
-        tInsert = [time(s):1/aviSR:time(e)]'; 
-        l = length(tInsert); 
-        XpixInsert = Xpix(s-1)*ones(l,1); 
-        YpixInsert = Ypix(s-1)*ones(l,1);
-        
-        time = [time(1:s); tInsert; time(e:end)];
-        Xpix = [Xpix(1:s); XpixInsert; Xpix(e:end)];
-        Ypix = [Ypix(1:s); YpixInsert; Ypix(e:end)];
+        newdt = diff(time);
     end
 end
 
@@ -133,11 +140,11 @@ if exist('Pos_temp.mat','file') || exist('Pos.mat','file')
         MoMtime
     else
         MouseOnMazeFrame = input('on what frame number does Mr. Mouse arrive on the maze??? --->');
-        MoMtime = MouseOnMazeFrame*0.03+time(1)
+        MoMtime = MouseOnMazeFrame*1/aviSR+time(1)
     end
 else
     MouseOnMazeFrame = input('on what frame number does Mr. Mouse arrive on the maze??? --->');
-    MoMtime = MouseOnMazeFrame*0.03+time(1)
+    MoMtime = MouseOnMazeFrame*1/aviSR+time(1)
 end
 close(h1); % Close Video Player
 
