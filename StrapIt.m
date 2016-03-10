@@ -43,9 +43,9 @@ end
 % this in the future
 [placemap, ~, placemap_nosmooth] = calcmapdec(Trace, MovMap, Xbin, Ybin, isrunning, cmperbin);
 if suppress_output == 0
-    ExperimentalH = DaveEntropy(placemap)
+    ExperimentalH = DaveEntropy(placemap);
     if calc_mut_info == 1
-       ExperimentalI = calc_mutual_information(placemap_nosmooth,MovMap)
+       ExperimentalI = calc_mutual_information(placemap_nosmooth,MovMap);
     end
 elseif suppress_output == 1
     ExperimentalH = DaveEntropy(placemap);

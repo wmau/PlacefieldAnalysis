@@ -53,7 +53,7 @@ function [output_filename] = CalculatePlacefields(RoomStr,varargin)
 %       (default is to use aligned data!)
 close all;
 
-progress_bar = 0;
+progress_bar = 1;
 exclude_frames = [];
 exclude_frames_raw = [];
 rotate_to_std = 0;
@@ -350,7 +350,7 @@ for i = 1:NumNeurons
       TMap_half = [];
       pval_half = [];
   end
-  SpatialI(i) = Dave_MutInfo(PositionVector(find(isrunning)),NumXBins*NumYBins,FT(i,find(isrunning))+1,2)
+  SpatialI(i) = Dave_MutInfo(PositionVector(find(isrunning)),NumXBins*NumYBins,FT(i,find(isrunning))+1,2);
   
   if progress_bar == 1
      p.progress; 
