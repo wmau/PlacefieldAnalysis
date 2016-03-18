@@ -1,4 +1,4 @@
-function [] = PFA(roomstr,rawfile)
+function [] = PFA(roomstr)
 % PFA(roomstr, rawfile)
 %
 % PlaceField Analysis wrapper function - gets placefields, calculates
@@ -11,19 +11,19 @@ function [] = PFA(roomstr,rawfile)
 
 
 % Step 1: Calculate Placefields
-CalculatePlacefields(roomstr);
+CalculatePlacefields(roomstr,'minspeed',3);
 
 % Step 2: Calculate Placefield stats
 PFstats();
 
-% Step 3: Extract Traces
-ExtractTracesProc('D1Movie.h5',rawfile)
-
-clear all;
-load PlaceMaps.mat;
-
-% Step 4: Browse placefields
-PFbrowse('D1Movie.h5',find(pval > 0.9));
+% % Step 3: Extract Traces
+% ExtractTracesProc('D1Movie.h5',rawfile)
+% 
+% clear all;
+% load PlaceMaps.mat;
+% 
+% % Step 4: Browse placefields
+% PFbrowse('D1Movie.h5',find(pval > 0.9));
 
 end
 

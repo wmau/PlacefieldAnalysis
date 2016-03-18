@@ -134,9 +134,18 @@ for j = 1: length(sesh)
         Pix2Cm = [];
         disp('Need room to get Pix2Cm')
     end
-    load('ProcOut.mat', 'FT')
+    
+    try
+        load(fullfile(pwd,'T2output.mat','FT'));
+        HalfWindow = 0; 
+    catch
+        load('ProcOut.mat', 'FT');
+        HalfWindow = 10;
+    end
+    
     % Align tracking and imaging
-    [x,y,speed,FT,FToffset,FToffsetRear, aviFrame] = AlignImagingToTracking(Pix2Cm,FT);
+    
+    [x,y,speed,FT,FToffset,FToffsetRear, aviFrame] = AlignImagingToTracking(Pix2Cm,FT,HalfWindow);
     
 %     % Transform circle data if indicated AND if in the square
 %     if circ2square_use == 1 && ~isempty(regexpi(sesh(j).Env,'octagon')) 

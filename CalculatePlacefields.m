@@ -284,11 +284,11 @@ axis tight;
 [~,Xbin] = histc(x,Xedges);
 [~,Ybin] = histc(y,Yedges);
 
-Xbin(find(Xbin == (NumXBins+1))) = NumXBins;
-Ybin(find(Ybin == (NumYBins+1))) = NumYBins;
+Xbin(Xbin == (NumXBins+1)) = NumXBins;
+Ybin(Ybin == (NumYBins+1)) = NumYBins;
 
-Xbin(find(Xbin == 0)) = 1;
-Ybin(find(Ybin == 0)) = 1;
+Xbin(Xbin == 0) = 1;
+Ybin(Ybin == 0) = 1;
 
 PositionVector = sub2ind([NumXBins,NumYBins],Xbin,Ybin);
 
@@ -334,12 +334,20 @@ RunSpeedMap = RunSpeedMap./RunOccMap;
 
 p = ProgressBar(NumNeurons);
 
+TMap = cell(1,NumNeurons);
+TMap_gauss = cell(1,NumNeurons); 
+TMap_unsmoothed = cell(1,NumNeurons); 
+pval = zeros(1,NumNeurons);
+pvalI = zeros(1,NumNeurons);
+SpatialH = zeros(1,NumNeurons); 
+SpatialI = zeros(1,NumNeurons); 
 for i = 1:NumNeurons
   [TMap{i}, TMap_gauss{i}, TMap_unsmoothed{i}] = calcmapdec(FT(i,:), ...
       RunOccMap, Xbin, Ybin, isrunning & frames_use_ind, cmperbin);
   [pval(i), pvalI(i),SpatialH(i)] = StrapIt(FT(i,:), RunOccMap, Xbin, Ybin, cmperbin, runepochs, isrunning & frames_use_ind,...
       0, 'suppress_output', progress_bar,'use_mut_info',use_mut_info);
-  if calc_half == 1 % Calculate half-session TMaps and p-values
+  if calc_half % Calculate half-session TMaps and p-values
+      
       for j = 1:2
           [TMap_half(j).Tmap{i}, TMap_half(j).TMap_gauss{i}, TMap_half(j).TMap_unsmoothed{i}] = ...
               calcmapdec(FT(i,:), RunOccMap, Xbin, Ybin, isrunning & frames_use_ind_half{j}, cmperbin);
