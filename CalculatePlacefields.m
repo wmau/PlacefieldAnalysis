@@ -358,7 +358,7 @@ for i = 1:NumNeurons
       TMap_half = [];
       pval_half = [];
   end
-  SpatialI(i) = Dave_MutInfo(PositionVector(find(isrunning)),NumXBins*NumYBins,FT(i,find(isrunning))+1,2);
+  SpatialI(i) = Dave_MutInfo(PositionVector(isrunning),NumXBins*NumYBins,FT(i,isrunning)+1,2);
   
   if progress_bar == 1
      p.progress; 

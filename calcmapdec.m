@@ -50,7 +50,7 @@ for j = 1:Flength
 end
 
 TMap = TMap./occmap; % Get Transient rate map
-TMap(find(isnan(TMap))) = 0; % Set NaNs to zero
+TMap(isnan(TMap)) = 0; % Set NaNs to zero
 TMap_unsmoothed = TMap; % Save unsmoothed TMap
 TMap2 = TMap; % Save copy for gaussian smoothing
 Tsum = sum(TMap(:));
