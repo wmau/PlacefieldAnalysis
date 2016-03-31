@@ -136,7 +136,7 @@ for j = 1: length(sesh)
     end
     
     try
-        load(fullfile(pwd,'T2output.mat','FT'));
+        load(fullfile(pwd,'T2output.mat'),'FT');
         HalfWindow = 0; 
     catch
         load('ProcOut.mat', 'FT');
