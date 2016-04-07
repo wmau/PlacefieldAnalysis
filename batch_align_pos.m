@@ -121,19 +121,8 @@ sesh(2:length(reg_struct) + 1) = reg_struct;
 currdir = cd;
 for j = 1: length(sesh)
     ChangeDirectory(sesh(j).Animal, sesh(j).Date ,sesh(j).Session);
-    if ~isempty(regexpi(sesh(j).Room,'201b'))
-        Pix2Cm = 0.15;
-        disp(['Using 0.15 for Pix2Cm for ' sesh(j).Date ' Session ' num2str(sesh(j).Session)])
-    elseif ~isempty(regexpi(sesh(j).Room,'201a - 2015'))
-        Pix2Cm = 0.0874;
-        disp(['Using 0.0875 for Pix2Cm for ' sesh(j).Date ' Session ' num2str(sesh(j).Session)])
-    elseif ~isempty(regexpi(sesh(j).Room,'201a'))
-        Pix2Cm = 0.0709;
-        disp(['Using 0.0709 for Pix2Cm for ' sesh(j).Date ' Session ' num2str(sesh(j).Session)])    
-    else
-        Pix2Cm = [];
-        disp('Need room to get Pix2Cm')
-    end
+    Pix2Cm = sesh(j).Pix2CM; 
+    disp(['Using ', num2str(Pix2Cm), ' as Pix2CM for ', sesh(j).Date, ' session ', num2str(sesh(j).Session)]);
     
     try
         load(fullfile(pwd,'T2output.mat'),'FT');
