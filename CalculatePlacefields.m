@@ -1,4 +1,4 @@
-function [output_filename] = CalculatePlacefields(RoomStr,varargin)
+function [output_filename] = CalculatePlacefields(MD,varargin)
 % [] = [] = CalculatePlacefields(RoomStr,varargin)
 % RoomStr, e.g. '201a'
 %       Takes tracking data from Pos.mat (or Pos_align.mat, see batch_pos_align)
@@ -52,6 +52,7 @@ function [output_filename] = CalculatePlacefields(RoomStr,varargin)
 %       -'use_unaligned_data': use Pos.mat file in lieu of Pos_align files
 %       (default is to use aligned data!)
 close all;
+cd(MD.Location);
 
 progress_bar = 1;
 exclude_frames = [];
@@ -126,28 +127,13 @@ end
 NumNeurons = size(FT,1);
 
 SR = 20;
-Pix2Cm = 0.15;
 
 % Note that Pix2Cm should probably live in MakeMouseSession somewhere since
 % there are actually a wide variety of these values.  Below is good enough
 % for now, but the two-environment task in Aug/Sep 2015 will require a
 % different value for sure
-if (nargin == 0)
-    Pix2Cm = 0.15;
-    display('assuming room 201b');
-    % factor for 201a is 0.0709
-else
-    if (strcmpi(RoomStr,'201a'))
-        Pix2Cm = 0.0709;
-        display('Room 201a');
-    elseif strcmpi(RoomStr,'201b')
-        Pix2Cm = 0.15;
-        display('Room 201b');
-    elseif strcmpi(RoomStr,'201a - 2015')
-        Pix2Cm = 0.0874;
-        display('Room 201a - 2015');
-    end
-end
+Pix2Cm = MD.Pix2CM; 
+disp(['Using ', num2str(Pix2Cm), ' as Pix2CM.']);
 
 for i = 1:NumNeurons
     temp = bwboundaries(NeuronImage{i});
