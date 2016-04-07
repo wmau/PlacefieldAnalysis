@@ -94,15 +94,17 @@ if any(bad)
             s = im(i).PixelIdxList(1)+cum_l;
             e = im(i).PixelIdxList(end)+cum_l;
 
-            tInsert = [(time(s)+1/aviSR):(1/aviSR):(time(e)-1/aviSR)]';
-            l = length(tInsert);  
-            cum_l = cum_l + l;
-            XpixInsert = Xpix(s-1)*ones(l,1); 
-            YpixInsert = Ypix(s-1)*ones(l,1);
+            if s < length(time)
+                tInsert = [(time(s)+1/aviSR):(1/aviSR):(time(e)-1/aviSR)]';
+                l = length(tInsert);  
+                cum_l = cum_l + l;
+                XpixInsert = Xpix(s-1)*ones(l,1); 
+                YpixInsert = Ypix(s-1)*ones(l,1);
 
-            time = [time(1:s); tInsert; time(e:end)];
-            Xpix = [Xpix(1:s); XpixInsert; Xpix(e:end)];
-            Ypix = [Ypix(1:s); YpixInsert; Ypix(e:end)];
+                time = [time(1:s); tInsert; time(e:end)];
+                Xpix = [Xpix(1:s); XpixInsert; Xpix(e:end)];
+                Ypix = [Ypix(1:s); YpixInsert; Ypix(e:end)];
+            end
         end
         
         newdt = diff(time);
