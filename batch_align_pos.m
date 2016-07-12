@@ -125,10 +125,12 @@ for j = 1: length(sesh)
     disp(['Using ', num2str(Pix2Cm), ' as Pix2CM for ', sesh(j).Date, ' session ', num2str(sesh(j).Session)]);
     
     try
-        load(fullfile(pwd,'T2output.mat'),'FT');
+        load(fullfile(pwd,'FinalOutput.mat'),'FT');
+        disp('Using FinalOutput.');
         HalfWindow = 0; 
     catch
         load('ProcOut.mat', 'FT');
+        disp('Using ProcOut.');
         HalfWindow = 10;
     end
     
