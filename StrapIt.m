@@ -8,6 +8,8 @@ function [ pval, pvalI, SpatialH ] = StrapIt(Trace,MovMap,Xbin,Ybin,cmperbin,goo
 
 suppress_output = 0;
 calc_mut_info = 0;
+NumShuffles = 500;
+
 for j = 1:length(varargin)
     if strcmpi('suppress_output',varargin{j})
        suppress_output = varargin{j+1};
@@ -15,14 +17,14 @@ for j = 1:length(varargin)
     if strcmpi('use_mut_info',varargin{j})
        calc_mut_info = varargin{j+1};
     end
-    
+    if strcmpi('NumShuffles',varargin{j})
+        NumShuffles = varargin{j+1};
+    end
 end
 
 if ~exist('toplot','var')
     toplot = 0;
 end
-
-NumShuffles = 500;
 
 % count the number of cell activations and their sizes
 
