@@ -124,7 +124,7 @@ if (~isempty(alt_inputs))
     display('using user-specified neuronal activity');
     load(alt_inputs,'NeuronImage','NeuronPixels','FT');
 else
-    load ('ProcOut.mat','NeuronImage','NeuronPixels','FT');
+    load ('FinalOutput.mat','NeuronImage','NeuronPixels','FT');
 end
 
 NumNeurons = size(FT,1);
