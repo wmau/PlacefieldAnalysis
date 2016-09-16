@@ -1,4 +1,4 @@
-function [xpos_interp,ypos_interp,start_time,MoMtime,time_interp,AVItime_interp] = PreProcessMousePosition_auto(filepath, auto_thresh,varargin)
+function [xpos_interp,ypos_interp,start_time,MoMtime,time_interp,AVItime_interp,nframesinserted] = PreProcessMousePosition_auto(filepath, auto_thresh,varargin)
 % [xpos_interp,ypos_interp,start_time,MoMtime] = PreProcessMousePosition_auto(filepath, auto_thresh,...)
 % Function to correct errors in mouse tracking.  Runs once through the
 % entire sessions automatically having you edit any events above a velocity
@@ -84,6 +84,7 @@ end
 %WM Edit: Check for correct Cineplex sampling rate. 
 dt = [0.03; round(diff(time),2)]; 
 bad = dt~=0.03; 
+bad_time = time;
 cum_l = 0;
 if any(bad)
     disp('Dropped frames detected! Correcting as best I can...'); 
@@ -105,11 +106,10 @@ if any(bad)
                 Xpix = [Xpix(1:s); XpixInsert; Xpix(e:end)];
                 Ypix = [Ypix(1:s); YpixInsert; Ypix(e:end)];
             end
-        end
-        
-        newdt = diff(time);
+        end       
     end
 end
+
 
 xAVI = Xpix*.6246;
 yAVI = Ypix*.6246;
@@ -296,7 +296,7 @@ while (strcmp(MorePoints,'y')) || strcmp(MorePoints,'m') || isempty(MorePoints)
         end
         
         % plot the current video frame
-        framesToCorrect(i*2);
+        %framesToCorrect(i*2);
         obj.currentTime = framesToCorrect(i*2)/aviSR;
         v = readFrame(obj);
         figure(1702);pause(0.01);
@@ -586,7 +586,7 @@ fps_brainimage = 20; % frames/sec for brain image timestamps
 
 start_time = ceil(min(time)*fps_brainimage)/fps_brainimage;
 max_time = floor(max(time)*fps_brainimage)/fps_brainimage;
-time_interp = start_time:1/fps_brainimage:max_time;
+time_interp = start_time:1/fps_brainimage:max_time;                         %20 Hz timer starts when you hit record.
 
 if (max(time_interp) >= max_time)
     time_interp = time_interp(1:end-1);
@@ -599,17 +599,19 @@ time_index = arrayfun(@(a) [max(find(a >= time)) min(find(a < time))],...
     time_interp,'UniformOutput',0);
 time_test_cell = arrayfun(@(a) a,time_interp,'UniformOutput',0);
 
-xpos_interp = cellfun(@(a,b) lin_interp(time(a), Xpix_filt(a),...
+xpos_interp = cellfun(@(a,b) lin_interp(time(a), Xpix_filt(a),...           %20 Hz timer starts when you hit record.
     b),time_index,time_test_cell);
 
-ypos_interp = cellfun(@(a,b) lin_interp(time(a), Ypix_filt(a),...
+ypos_interp = cellfun(@(a,b) lin_interp(time(a), Ypix_filt(a),...           %20 Hz timer starts when you hit record.
+    b),time_index,time_test_cell);  
+
+AVItime_interp = cellfun(@(a,b) lin_interp(time(a), AVIobjTime(a),...       %20 Hz timer starts when you hit record.
     b),time_index,time_test_cell);
 
-AVItime_interp = cellfun(@(a,b) lin_interp(time(a), AVIobjTime(a),...
-    b),time_index,time_test_cell);
+nframesinserted = round(length(AVItime_interp) - length(bad_time)*0.6664);
 
 % Save all filtered data as well as raw data in case you want to go back
 % and fix an error you discover later on
-save Pos.mat xpos_interp ypos_interp time_interp start_time MoMtime Xpix Ypix xAVI yAVI MouseOnMazeFrame AVItime_interp
+save Pos.mat xpos_interp ypos_interp time_interp start_time MoMtime Xpix Ypix xAVI yAVI MouseOnMazeFrame AVItime_interp nframesinserted;
 
 end

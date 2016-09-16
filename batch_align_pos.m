@@ -1,4 +1,4 @@
-function [ ] = batch_align_pos(base_struct, reg_struct, varargin)
+function batch_align_pos(base_struct, reg_struct, varargin)
 % batch_align_pos(base_struct, reg_struct, varargin)
 %
 % Aligns position data so that every session has the same bounds on the
@@ -74,7 +74,9 @@ function [ ] = batch_align_pos(base_struct, reg_struct, varargin)
 % does not account for any fish-eye distortions of the maze...should be
 % good for most comparisons between the same mazes, however
 
-close all
+close all;
+global MasterDirectory;
+MasterDirectory = 'C:\MasterData';
 
 %% Parameters/default values
 manual_rot_overwrite = 1;
@@ -143,7 +145,8 @@ for j = 1: length(sesh)
     end
     
     % Align tracking and imaging
-    [x,y,speed,FT,FToffset,FToffsetRear, aviFrame] = AlignImagingToTracking(Pix2Cm,FT,HalfWindow);
+    [x,y,speed,FT,FToffset,FToffsetRear,aviFrame,time_interp,nframesinserted] = ...
+        AlignImagingToTracking(Pix2Cm,FT,HalfWindow);
     
 %     % Transform circle data if indicated AND if in the square
 %     if circ2square_use == 1 && ~isempty(regexpi(sesh(j).Env,'octagon')) 
@@ -168,6 +171,8 @@ for j = 1: length(sesh)
     sesh(j).rot_y = rot_y;
     sesh(j).rot_ang = rot_ang;
     sesh(j).aviFrame = aviFrame;
+    sesh(j).time_interp = time_interp;
+    sesh(j).nframesinserted = nframesinserted;
     
 end
 
@@ -260,14 +265,16 @@ for j = 1:length(sesh)
     FToffset = sesh(j).FToffset;
     FToffsetRear = sesh(j).FToffsetRear;
     aviFrame = sesh(j).aviFrame;
+    time_interp = sesh(j).time_interp;
+    nframesinserted = sesh(j).nframesinserted;
     if auto_rotate_to_std == 0
     save(fullfile(sesh(j).Location,['Pos_align' name_append '.mat']),'x_adj_cm','y_adj_cm',...
-        'xmin','xmax','ymin','ymax', 'speed', 'FT', 'FToffset', ...
+        'xmin','xmax','ymin','ymax', 'speed', 'FT', 'FToffset', 'nframesinserted','time_interp',...
         'FToffsetRear', 'aviFrame', 'base_struct','sessions_included','auto_rotate_to_std');
     elseif auto_rotate_to_std == 1
         % finish here - save as a different filename?
         save(fullfile(sesh(j).Location,['Pos_align_std_corr' name_append '.mat']),'x_adj_cm','y_adj_cm',...
-        'xmin','xmax','ymin','ymax', 'speed', 'FT', 'FToffset', ...
+        'xmin','xmax','ymin','ymax', 'speed', 'FT', 'FToffset', 'nframesinserted','time_interp',...
         'FToffsetRear','aviFrame', 'base_struct', 'sessions_included', 'auto_rotate_to_std');
     end
 end

@@ -1,4 +1,4 @@
-function [x,y,speed,FT,FToffset,FToffsetRear,aviFrame,time_interp] = AlignImagingToTracking(Pix2Cm,FT,HalfWindow)
+function [x,y,speed,FT,FToffset,FToffsetRear,aviFrame,time_interp,nframesinserted] = AlignImagingToTracking(Pix2Cm,FT,HalfWindow)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 SR = 20;
@@ -13,7 +13,8 @@ try
     y = ypos_interp;
 catch
     vidFile = dir('*.DVT');
-    [xpos_interp,ypos_interp,start_time,MoMtime,time_interp,AVItime_interp] = PreProcessMousePosition_auto(vidFile.name);
+    [xpos_interp,ypos_interp,start_time,MoMtime,time_interp,AVItime_interp,nframesinserted]...
+        = PreProcessMousePosition_auto(vidFile.name);
 end
 
 x = xpos_interp;
