@@ -136,6 +136,7 @@ for j = 1: length(sesh)
     
     try
         load(fullfile(pwd,'FinalOutput.mat'),'FT');
+        load(fullfile(pwd,'FinalTraces.mat'),'trace','difftrace','rawtrace');
         disp('Using FinalOutput.');
         HalfWindow = 0; 
     catch
@@ -147,6 +148,9 @@ for j = 1: length(sesh)
     % Align tracking and imaging
     [x,y,speed,FT,FToffset,FToffsetRear,aviFrame,time_interp,nframesinserted] = ...
         AlignImagingToTracking(Pix2Cm,FT,HalfWindow);
+    [~,~,~,trace] = AlignImagingToTracking(Pix2Cm,trace,HalfWindow);
+    [~,~,~,difftrace] = AlignImagingToTracking(Pix2Cm,difftrace,HalfWindow);
+    [~,~,~,rawtrace] = AlignImagingToTracking(Pix2Cm,rawtrace,HalfWindow);
     
 %     % Transform circle data if indicated AND if in the square
 %     if circ2square_use == 1 && ~isempty(regexpi(sesh(j).Env,'octagon')) 
@@ -162,11 +166,22 @@ for j = 1: length(sesh)
     sesh(j).x = x;
     sesh(j).y = y;
     sesh(j).FT = FT;
+    sesh(j).trace = trace;
+    sesh(j).difftrace = difftrace;
+    sesh(j).rawtrace = rawtrace;
     sesh(j).speed = speed;
     sesh(j).FToffset = FToffset;
     sesh(j).FToffsetRear = FToffsetRear;
+    
     % Fix day-to-day mis-alignments in rotation of the maze
-    [~,rot_x,rot_y, rot_ang] = sections(x,y,0,'manual_rot_overwrite',manual_rot_overwrite);
+    skewed = true;
+    while skewed
+        [rot_x,rot_y,rot_ang] = rotate_traj(x,y);
+        plot(rot_x,rot_y); 
+        satisfied = input('Are you satisfied with the rotation? Enter y or n-->','s');
+        skewed = ~strcmp(satisfied,'y');
+    end
+        
     sesh(j).rot_x = rot_x;
     sesh(j).rot_y = rot_y;
     sesh(j).rot_ang = rot_ang;
@@ -262,6 +277,9 @@ for j = 1:length(sesh)
     y_adj_cm = sesh(j).y_adj;
     speed = sesh(j).speed;
     FT = sesh(j).FT;
+    trace = sesh(j).trace;
+    difftrace = sesh(j).difftrace;
+    rawtrace = sesh(j).rawtrace;
     FToffset = sesh(j).FToffset;
     FToffsetRear = sesh(j).FToffsetRear;
     aviFrame = sesh(j).aviFrame;
@@ -269,12 +287,12 @@ for j = 1:length(sesh)
     nframesinserted = sesh(j).nframesinserted;
     if auto_rotate_to_std == 0
     save(fullfile(sesh(j).Location,['Pos_align' name_append '.mat']),'x_adj_cm','y_adj_cm',...
-        'xmin','xmax','ymin','ymax', 'speed', 'FT', 'FToffset', 'nframesinserted','time_interp',...
+        'xmin','xmax','ymin','ymax', 'speed', 'FT', 'trace', 'difftrace', 'rawtrace','FToffset', 'nframesinserted','time_interp',...
         'FToffsetRear', 'aviFrame', 'base_struct','sessions_included','auto_rotate_to_std');
     elseif auto_rotate_to_std == 1
         % finish here - save as a different filename?
         save(fullfile(sesh(j).Location,['Pos_align_std_corr' name_append '.mat']),'x_adj_cm','y_adj_cm',...
-        'xmin','xmax','ymin','ymax', 'speed', 'FT', 'FToffset', 'nframesinserted','time_interp',...
+        'xmin','xmax','ymin','ymax', 'speed', 'FT', 'trace', 'difftrace','rawtrace','FToffset', 'nframesinserted','time_interp',...
         'FToffsetRear','aviFrame', 'base_struct', 'sessions_included', 'auto_rotate_to_std');
     end
 end
