@@ -158,7 +158,9 @@ if progress_bar == 1
     p.stop;
 end
 
-disp('Calculating PF hits for all neurons')
+disp('Calculating PF hits for all neurons');
+PFnumhits = zeros(NumNeurons,max(NumPF));
+PFpcthits = zeros(NumNeurons,max(NumPF));
 if progress_bar == 1
     p = ProgressBar(NumNeurons);
 end
@@ -172,8 +174,8 @@ for i = 1:NumNeurons
 
     for j = 1:NumPF(i)
         PFactive{i,j} = [];
-        PFnumhits(i,j) = 0;
-        PFpcthits(i,j) = 0;
+        %PFnumhits(i,j) = 0;
+        %PFpcthits(i,j) = 0;
         for k = 1:PFnumepochs(i,j)
             PFactive{i,j}(k) = sum(FT(i,PFepochs{i,j}(k,1):PFepochs{i,j}(k,2))) > 0;
         end

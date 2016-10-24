@@ -110,19 +110,3 @@ end
 SpatialH = ExperimentalH;
 
 end
-
-
-        
-
-
-
-
-    
-    
-    
-    
-
-
-
-
-

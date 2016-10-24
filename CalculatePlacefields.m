@@ -334,22 +334,23 @@ SpatialH = zeros(1,NumNeurons);
 SpatialI = zeros(1,NumNeurons); 
 NumRunFrames = sum(isrunning & frames_use_ind);
 
-for i = 1:NumNeurons
-  [TMap{i}, TMap_gauss{i}, TMap_unsmoothed{i}] = calcmapdec(FT(i,:), ...
-      RunOccMap, Xbin, Ybin, isrunning & frames_use_ind, cmperbin);
-  [pval(i), pvalI(i),SpatialH(i)] = StrapIt(FT(i,:), RunOccMap, Xbin, Ybin, cmperbin, runepochs, isrunning & frames_use_ind,...
-      0, 'suppress_output', progress_bar,'use_mut_info',use_mut_info,'NumShuffles',NumShuffles);
-  if calc_half  % Calculate half-session TMaps and p-values
-      for j = 1:2
+if calc_half
+    for j = 1:2
           [TMap_half(j).Tmap{i}, TMap_half(j).TMap_gauss{i}, TMap_half(j).TMap_unsmoothed{i}] = ...
               calcmapdec(FT(i,:), RunOccMap, Xbin, Ybin, isrunning & frames_use_ind_half{j}, cmperbin);
           [pval_half{j}.pval(i), pval_half{j}.pvalI(i),pval_half{j}.SpatialH(i)] = StrapIt(FT(i,:), RunOccMap, Xbin, Ybin, cmperbin, runepochs, isrunning & frames_use_ind_half{j},...
               0, 'suppress_output', progress_bar,'use_mut_info',use_mut_info,'NumShuffles',NumShuffles);
-      end
-  else
-      TMap_half = [];
-      pval_half = [];
-  end
+    end
+else
+    TMap_half = [];
+    pval_half = [];
+end
+
+parfor i = 1:NumNeurons
+  [TMap{i}, TMap_gauss{i}, TMap_unsmoothed{i}] = calcmapdec(FT(i,:), ...
+      RunOccMap, Xbin, Ybin, isrunning & frames_use_ind, cmperbin);
+  [pval(i), pvalI(i),SpatialH(i)] = StrapIt(FT(i,:), RunOccMap, Xbin, Ybin, cmperbin, runepochs, isrunning & frames_use_ind,...
+      0, 'suppress_output', progress_bar,'use_mut_info',use_mut_info,'NumShuffles',NumShuffles);
 
   SpatialI(i) = SkaggsCaMutInfo(TMap_gauss{i},RunOccMap,NumRunFrames,cmperbin);
   
