@@ -122,10 +122,12 @@ name_append = [name_append name_append2];
 
 if (~isempty(alt_inputs))
     display('using user-specified neuronal activity');
-    load(alt_inputs,'NeuronImage','NeuronPixels','FT');
+    load(alt_inputs,'NeuronImage','NeuronPixelIdxList','PSAbool');
 else
     load ('FinalOutput.mat','NeuronImage','NeuronPixels','FT');
 end
+NeuronPixels = NeuronPixelIdxList;
+FT = PSAbool;
 
 NumNeurons = size(FT,1);
 
